@@ -281,7 +281,7 @@
             </div>
 
             <div class="question-info">
-                <p>Pregunta <span id="currentQuestion">1</span> de <span id="totalQuestions">5</span></p>
+                <p>Pregunta <span id="currentQuestion">1</span> de <span id="totalQuestions">10</span></p>
             </div>
 
             <div class="question-card" id="questionCard">
@@ -334,57 +334,117 @@
             }, 5000);
         }
 
-        // Preguntas de asertividad (fallback local)
+        // Preguntas de asertividad (fallback local) - SINCRONIZADO CON RENDER (10 preguntas)
         const TEMP_QUESTIONS = [
             {
                 id: 1,
-                text: "Cuando alguien me critica de manera injusta...",
+                content: "Cuando alguien critica tu trabajo de manera injusta, ¿cómo sueles responder?",
                 options: [
-                    "Defiendo mi punto de vista de manera calmada y respetuosa",
-                    "Me quedo callado para evitar conflictos",
-                    "Me pongo a la defensiva y contraataco",
-                    "Acepto la crítica aunque no esté de acuerdo"
-                ]
+                    "Permanezco en silencio para evitar el conflicto",
+                    "Me defiendo con calma y hechos",
+                    "Me enojo y me pongo a la defensiva",
+                    "Intento cambiar de tema"
+                ],
+                question_type: "multiple_choice"
             },
             {
                 id: 2,
-                text: "Si un compañero de trabajo me interrumpe constantemente en las reuniones...",
+                content: "Si un amigo te pide dinero repetidamente y no lo devuelve, ¿abordarías este tema?",
                 options: [
-                    "Le pido respetuosamente que me permita terminar de hablar",
-                    "Dejo que hable y no digo nada",
-                    "Le digo bruscamente que pare de interrumpir",
-                    "Evito participar en futuras reuniones"
-                ]
+                    "No, evitaría mencionarlo",
+                    "Sí, tendría una conversación honesta al respecto",
+                    "Dejaría de prestar pero no lo hablaría",
+                    "Pondría excusas para no prestar más"
+                ],
+                question_type: "multiple_choice"
             },
             {
                 id: 3,
-                text: "Cuando necesito pedir un favor importante a alguien...",
+                content: "¿Con qué frecuencia expresas tu opinión en discusiones grupales?",
                 options: [
-                    "Explico claramente lo que necesito y por qué es importante",
-                    "Doy muchas vueltas antes de pedirlo por miedo al rechazo",
-                    "Exijo que me ayuden porque es su obligación",
-                    "Prefiero no pedirlo para no molestar"
-                ]
+                    "Rara vez - Suelo estar de acuerdo con la mayoría",
+                    "A menudo - Cuando el tema me importa mucho",
+                    "Siempre - Hablo sin importar la opinión de los demás",
+                    "A veces - Solo cuando me siento muy seguro"
+                ],
+                question_type: "multiple_choice"
             },
             {
                 id: 4,
-                text: "Si alguien no respeta mis límites personales...",
+                content: "Cuando alguien se cuela delante de ti en una fila, ¿qué sueles hacer?",
                 options: [
-                    "Comunico mis límites de manera clara y firme",
-                    "No digo nada para mantener la paz",
-                    "Me enfado y reacciono de manera agresiva",
-                    "Me alejo sin explicar por qué"
-                ]
+                    "Dejo que se cuelen y evito el conflicto",
+                    "Señalo educadamente que hay una fila",
+                    "Los confronto agresivamente",
+                    "No digo nada pero me frustro"
+                ],
+                question_type: "multiple_choice"
             },
             {
                 id: 5,
-                text: "Cuando debo expresar una opinión diferente en un grupo...",
+                content: "¿Cómo manejas las solicitudes que no quieres cumplir?",
                 options: [
-                    "Expreso mi punto de vista de manera respetuosa y fundamentada",
-                    "Acepto sin cuestionar para evitar problemas",
-                    "Me molesto pero no digo nada",
-                    "Busco aliados antes de expresar mi opinión"
-                ]
+                    "Digo que sí aunque no quiera",
+                    "Digo que no de forma clara y directa",
+                    "Evito a la persona o la situación",
+                    "Pongo excusas"
+                ],
+                question_type: "multiple_choice"
+            },
+            {
+                id: 6,
+                content: "Si tu comida en un restaurante no está preparada como la pediste, ¿qué harías?",
+                options: [
+                    "No digo nada pero dejo poca propina",
+                    "Expreso mis inquietudes educadamente al camarero",
+                    "Me quejo en voz alta y exijo ver al gerente",
+                    "Nunca vuelvo al restaurante"
+                ],
+                question_type: "multiple_choice"
+            },
+            {
+                id: 7,
+                content: "¿Cómo sueles reaccionar ante los cumplidos?",
+                options: [
+                    "Los minimizo o desvío",
+                    "Acepto los cumplidos con gratitud",
+                    "Me siento muy incómodo",
+                    "Los rechazo completamente"
+                ],
+                question_type: "multiple_choice"
+            },
+            {
+                id: 8,
+                content: "Durante una reunión de equipo, ¿cómo respondes cuando no estás de acuerdo con una idea propuesta?",
+                options: [
+                    "Me quedo callado y acepto",
+                    "Expreso mi desacuerdo respetuosamente y propongo alternativas",
+                    "Discuto fuertemente en contra",
+                    "Estoy de acuerdo en la reunión pero me quejo después"
+                ],
+                question_type: "multiple_choice"
+            },
+            {
+                id: 9,
+                content: "Si el comportamiento de un colega te molesta, ¿qué harías?",
+                options: [
+                    "No digo nada pero me resiento",
+                    "Lo hablo directamente con la persona",
+                    "Me enojo visiblemente y confronto",
+                    "Doy indirectas sutiles"
+                ],
+                question_type: "multiple_choice"
+            },
+            {
+                id: 10,
+                content: "Cuando logras algo importante en el trabajo, ¿cómo lo manejas?",
+                options: [
+                    "No lo menciono en absoluto",
+                    "Lo comparto con confianza cuando es apropiado",
+                    "Hablo de ello constantemente",
+                    "Espero que otros lo noten"
+                ],
+                question_type: "multiple_choice"
             }
         ];
 
@@ -493,7 +553,7 @@
             document.getElementById('totalQuestions').textContent = questions.length;
 
             questionCard.innerHTML = `
-                <div class="question-text">${question.text}</div>
+                <div class="question-text">${question.content || question.text}</div>
                 <div class="options">
                     ${question.options.map((option, index) => `
                         <div class="option" onclick="selectOption(${index})">
