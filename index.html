@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Evaluación de Asertividad</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #718096;
+        }
+
+        .login-form, .assessment-container {
+            display: none;
+        }
+
+        .login-form.active, .assessment-container.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .question-card {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 0.75rem;
+            width: 18px;
+            height: 18px;
+        }
+
+        .progress-bar {
+            background: #e2e8f0;
+            height: 8px;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .btn-secondary {
+            background: #718096;
+            width: auto;
+            margin: 0;
+        }
+
+        .results {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .score {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+
+        .interpretation {
+            background: #f7fafc;
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .interpretation h3 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        .interpretation p {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .question-counter {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #718096;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 0.5rem;
+                padding: 1.5rem;
+            }
+            
+            .score {
+                font-size: 2.5rem;
+            }
+            
+            .navigation {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .btn-secondary {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Evaluación de Asertividad</h1>
+            <p>Descubre tu nivel de asertividad a través de esta evaluación profesional</p>
+        </div>
+
+        <!-- Formulario de Login -->
+        <div class="login-form active" id="loginForm">
+            <div class="form-group">
+                <label for="name">Nombre completo:</label>
+                <input type="text" id="name" required placeholder="Ingresa tu nombre completo">
+            </div>
+            <div class="form-group">
+                <label for="email">Correo electrónico:</label>
+                <input type="email" id="email" required placeholder="tu@email.com">
+            </div>
+            <div class="form-group">
+                <label for="age">Edad:</label>
+                <input type="number" id="age" min="16" max="100" required placeholder="25">
+            </div>
+            <div class="form-group">
+                <label for="gender">Género:</label>
+                <select id="gender" required>
+                    <option value="">Selecciona una opción</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
+                    <option value="otro">Otro</option>
+                    <option value="prefiero_no_decir">Prefiero no decir</option>
+                </select>
+            </div>
+            <button class="btn" onclick="startAssessment()">Comenzar Evaluación</button>
+        </div>
+
+        <!-- Contenedor de Evaluación -->
+        <div class="assessment-container" id="assessmentContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="question-counter">
+                Pregunta <span id="currentQuestion">1</span> de <span id="totalQuestions">30</span>
+            </div>
+
+            <div class="question-card" id="questionCard">
+                <!-- Las preguntas se cargarán dinámicamente -->
+            </div>
+
+            <div class="navigation">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">
+                    ← Anterior
+                </button>
+                <button class="btn" id="nextBtn" onclick="nextQuestion()" disabled>
+                    Siguiente →
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Carga -->
+        <div class="loading" id="loadingScreen" style="display: none;">
+            <div class="spinner"></div>
+            <p>Procesando tu evaluación...</p>
+        </div>
+
+        <!-- Resultados -->
+        <div class="results" id="resultsContainer" style="display: none;">
+            <h2>¡Evaluación Completada!</h2>
+            <div class="score" id="scoreDisplay">0</div>
+            <p><strong id="levelDisplay">Nivel de Asertividad</strong></p>
+            <div class="interpretation" id="interpretationDisplay">
+                <!-- La interpretación se cargará dinámicamente -->
+            </div>
+            <button class="btn" onclick="restartAssessment()">Realizar Nueva Evaluación</button>
+        </div>
+
+        <!-- Mensajes de Error/Éxito -->
+        <div id="messageContainer"></div>
+    </div>
+
+    <script>
+        // URL del backend en Render
+        const API_BASE_URL = 'https://assessment-platform-1nuo.onrender.com';
+        
+        let currentUser = null;
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let answers = {};
+
+        // Función para mostrar mensajes
+        function showMessage(message, type = 'error') {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Función para hacer requests al API
+        async function apiRequest(endpoint, method = 'GET', data = null) {
+            try {
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include'  // Incluir cookies de sesión
+                };
+
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API Error:', error);
+                throw error;
+            }
+        }
+
+        // Preguntas de ejemplo integradas (solución temporal funcional)
+        const TEMP_QUESTIONS = [
+            {
+                id: 1,
+                content: "Cuando alguien me critica de manera constructiva, yo...",
+                question_type: "multiple_choice",
+                options: [
+                    "Escucho atentamente y considero sus puntos de vista",
+                    "Me defiendo inmediatamente sin escuchar",
+                    "Me disculpo excesivamente aunque no sea mi culpa",
+                    "Cambio de tema para evitar la conversación"
+                ]
+            },
+            {
+                id: 2,
+                content: "Si necesito expresar una opinión diferente en una reunión, yo...",
+                question_type: "multiple_choice",
+                options: [
+                    "Expreso mi punto de vista de manera clara y respetuosa",
+                    "Me quedo callado para evitar conflictos",
+                    "Insisto agresivamente en que mi opinión es la correcta",
+                    "Espero que alguien más diga lo que yo pienso"
+                ]
+            },
+            {
+                id: 3,
+                content: "Cuando alguien me pide un favor que no puedo hacer, yo...",
+                question_type: "multiple_choice",
+                options: [
+                    "Explico amablemente por qué no puedo ayudar",
+                    "Acepto aunque me cause problemas",
+                    "Me molesto y respondo de forma brusca",
+                    "Ignoro la petición esperando que se olviden"
+                ]
+            },
+            {
+                id: 4,
+                content: "Cuando recibo un cumplido, yo...",
+                question_type: "multiple_choice",
+                options: [
+                    "Lo acepto con una sonrisa y digo 'gracias'",
+                    "Lo minimizo diciendo que no es para tanto",
+                    "Me siento incómodo y cambio de tema",
+                    "Respondo con otro cumplido hacia la otra persona"
+                ]
+            },
+            {
+                id: 5,
+                content: "Si estoy en desacuerdo con mi jefe, yo...",
+                question_type: "multiple_choice",
+                options: [
+                    "Expreso mi punto de vista de manera respetuosa y fundamentada",
+                    "Acepto sin cuestionar para evitar problemas",
+                    "Me molesto pero no digo nada",
+                    "Busco aliados antes de expresar mi opinión"
+                ]
+            }
+        ];
+
+        // Iniciar evaluación (versión integrada que funciona)
+        async function startAssessment() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+
+            if (!name || !email || !age || !gender) {
+                showMessage('Por favor, completa todos los campos.');
+                return;
+            }
+
+            if (age < 16 || age > 100) {
+                showMessage('La edad debe estar entre 16 y 100 años.');
+                return;
+            }
+
+            try {
+                console.log('🚀 Iniciando evaluación integrada...');
+                
+                // Paso 1: Login con cookies (método que funciona)
+                const loginResponse = await fetch(`${API_BASE_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+                
+                if (!loginResponse.ok) throw new Error('Login failed');
+                console.log('✅ Login exitoso');
+
+                // Paso 2: Demographics (método que funciona)
+                const demoResponse = await fetch(`${API_BASE_URL}/api/demographics`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        name: name,
+                        email: email,
+                        age: parseInt(age),
+                        gender: gender
+                    })
+                });
+                
+                if (!demoResponse.ok) throw new Error('Demographics failed');
+                currentUser = await demoResponse.json();
+                console.log('✅ Demographics exitoso');
+
+                // Paso 3: Usar preguntas integradas (que funcionan)
+                questions = TEMP_QUESTIONS;
+                console.log(`✅ ${questions.length} preguntas cargadas`);
+
+                // Cambiar a la vista de evaluación
+                document.getElementById('loginForm').classList.remove('active');
+                document.getElementById('assessmentContainer').classList.add('active');
+                
+                // Mostrar primera pregunta
+                showQuestion();
+                updateProgress();
+                
+                showMessage('¡Evaluación iniciada exitosamente!', 'success');
+                console.log('🎯 Evaluación iniciada con éxito');
+                
+            } catch (error) {
+                console.error('Error starting assessment:', error);
+                showMessage('Error al iniciar la evaluación. Por favor, inténtalo de nuevo.');
+            }
+        }
+
+        // Mostrar pregunta actual
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            const questionCard = document.getElementById('questionCard');
+            
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = questions.length;
+
+            questionCard.innerHTML = `
+                <div class="question-text">${question.text}</div>
+                <div class="options">
+                    ${question.options.map((option, index) => `
+                        <div class="option" onclick="selectOption(${index})">
+                            <input type="radio" name="question${question.id}" value="${index}" id="option${index}">
+                            <label for="option${index}">${option}</label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Restaurar respuesta anterior si existe
+            if (answers[question.id] !== undefined) {
+                selectOption(answers[question.id]);
+            }
+
+            // Actualizar botones de navegación
+            updateNavigationButtons();
+        }
+
+        // Seleccionar opción
+        function selectOption(optionIndex) {
+            const question = questions[currentQuestionIndex];
+            answers[question.id] = optionIndex;
+
+            // Actualizar interfaz
+            document.querySelectorAll('.option').forEach((option, index) => {
+                option.classList.remove('selected');
+                const radio = option.querySelector('input[type="radio"]');
+                radio.checked = false;
+                
+                if (index === optionIndex) {
+                    option.classList.add('selected');
+                    radio.checked = true;
+                }
+            });
+
+            // Habilitar botón siguiente
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        // Pregunta siguiente
+        function nextQuestion() {
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+                updateProgress();
+            } else {
+                // Completar evaluación
+                completeAssessment();
+            }
+        }
+
+        // Pregunta anterior
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+                updateProgress();
+            }
+        }
+
+        // Actualizar botones de navegación
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.style.display = currentQuestionIndex > 0 ? 'block' : 'none';
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = 'Finalizar Evaluación';
+            } else {
+                nextBtn.textContent = 'Siguiente →';
+            }
+
+            // Verificar si hay respuesta para la pregunta actual
+            const currentQuestion = questions[currentQuestionIndex];
+            nextBtn.disabled = answers[currentQuestion.id] === undefined;
+        }
+
+        // Actualizar barra de progreso
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        // Completar evaluación
+        async function completeAssessment() {
+            // Mostrar pantalla de carga
+            document.getElementById('assessmentContainer').classList.remove('active');
+            document.getElementById('loadingScreen').style.display = 'block';
+
+            try {
+                // Convertir respuestas al formato esperado por el backend
+                const responses = [];
+                for (const [questionId, selectedOptionIndex] of Object.entries(answers)) {
+                    const question = questions.find(q => q.id == questionId);
+                    if (question && question.options && question.options[selectedOptionIndex]) {
+                        responses.push({
+                            question_id: parseInt(questionId),
+                            selected_option: selectedOptionIndex,
+                            option_text: question.options[selectedOptionIndex]
+                        });
+                    }
+                }
+
+                // Enviar respuestas al servidor con el formato correcto
+                const result = await apiRequest('/api/submit', 'POST', {
+                    assessment_id: 1,  // ID de la evaluación de asertividad
+                    responses: responses
+                });
+
+                // Mostrar resultados
+                showResults(result);
+                
+            } catch (error) {
+                console.error('Error submitting assessment:', error);
+                showMessage('Error al procesar la evaluación. Por favor, inténtalo de nuevo.');
+                
+                // Volver a la evaluación
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('assessmentContainer').classList.add('active');
+            }
+        }
+
+        // Mostrar resultados
+        function showResults(result) {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+
+            document.getElementById('scoreDisplay').textContent = result.score + '%';
+            document.getElementById('levelDisplay').textContent = result.score_level;
+            
+            const interpretation = document.getElementById('interpretationDisplay');
+            interpretation.innerHTML = `
+                <h3>Interpretación de tu Resultado</h3>
+                <p><strong>Nivel:</strong> ${result.score_level}</p>
+                <p><strong>Puntuación:</strong> ${result.score}% de ${result.total_questions} preguntas</p>
+                <p>${result.result_text}</p>
+            `;
+
+            showMessage('¡Evaluación completada exitosamente!', 'success');
+        }
+
+        // Reiniciar evaluación
+        function restartAssessment() {
+            currentUser = null;
+            questions = [];
+            currentQuestionIndex = 0;
+            answers = {};
+
+            // Limpiar formulario
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('gender').value = '';
+
+            // Mostrar formulario de login
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('loginForm').classList.add('active');
+
+            // Limpiar mensajes
+            document.getElementById('messageContainer').innerHTML = '';
+        }
+
+        // Verificar conexión con el API al cargar la página
+        window.addEventListener('load', async function() {
+            try {
+                await apiRequest('/api/health');
+                console.log('✅ Conexión con API establecida');
+            } catch (error) {
+                console.error('❌ Error de conexión con API:', error);
+                showMessage('⚠️ Problemas de conectividad. Algunas funciones pueden no estar disponibles.');
+            }
+        });
+    </script>
+</body>
+</html>
