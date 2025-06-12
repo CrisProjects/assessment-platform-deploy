@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plataforma de Evaluación de Asertividad - Prueba Local</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 600px;
+            margin: 1rem;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #718096;
+        }
+
+        .login-form, .assessment-container {
+            display: none;
+        }
+
+        .active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #4a5568;
+            font-weight: 500;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .question-card {
+            background: #f8fafc;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 2px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+
+        .option input[type="radio"] {
+            margin-right: 0.75rem;
+            width: auto;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 2rem;
+        }
+
+        .nav-btn {
+            padding: 0.5rem 1.5rem;
+            background: #e2e8f0;
+            color: #4a5568;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .nav-btn:hover {
+            background: #cbd5e0;
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .nav-btn.primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .nav-btn.primary:hover {
+            background: #5a67d8;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .results-container {
+            text-align: center;
+            padding: 2rem 0;
+        }
+
+        .score-display {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+            margin: 1rem 0;
+        }
+
+        .interpretation {
+            background: #f0f4ff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+
+        .interpretation h3 {
+            color: #4a5568;
+            margin-bottom: 1rem;
+        }
+
+        .interpretation p {
+            color: #718096;
+            line-height: 1.6;
+            margin-bottom: 0.75rem;
+        }
+
+        .error {
+            background: #fed7d7;
+            color: #c53030;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .success {
+            background: #c6f6d5;
+            color: #22543d;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .question-counter {
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #718096;
+        }
+
+        .local-test-banner {
+            background: #fff3cd;
+            color: #856404;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            text-align: center;
+            border: 1px solid #ffeaa7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Evaluación de Asertividad</h1>
+            <p>Descubre tu nivel de asertividad con esta evaluación profesional</p>
+        </div>
+
+        <div class="local-test-banner">
+            🧪 <strong>MODO PRUEBA LOCAL</strong> - Versión de prueba sin backend
+        </div>
+
+        <div id="messageContainer"></div>
+
+        <!-- Formulario de datos personales -->
+        <div id="loginForm" class="login-form active">
+            <h2 style="margin-bottom: 1.5rem; color: #4a5568;">Datos Personales</h2>
+            <div class="form-group">
+                <label for="name">Nombre completo:</label>
+                <input type="text" id="name" placeholder="Ingresa tu nombre completo">
+            </div>
+            <div class="form-group">
+                <label for="email">Correo electrónico:</label>
+                <input type="email" id="email" placeholder="tu@email.com">
+            </div>
+            <div class="form-group">
+                <label for="age">Edad:</label>
+                <input type="number" id="age" min="16" max="100" placeholder="Tu edad">
+            </div>
+            <div class="form-group">
+                <label for="gender">Género:</label>
+                <select id="gender">
+                    <option value="">Selecciona una opción</option>
+                    <option value="masculino">Masculino</option>
+                    <option value="femenino">Femenino</option>
+                    <option value="otro">Otro</option>
+                    <option value="prefiero-no-decir">Prefiero no decir</option>
+                </select>
+            </div>
+            <button type="button" class="btn" onclick="startAssessmentLocal()">Iniciar Evaluación</button>
+        </div>
+
+        <!-- Contenedor de evaluación -->
+        <div id="assessmentContainer" class="assessment-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="question-counter">
+                Pregunta <span id="currentQuestion">1</span> de <span id="totalQuestions">5</span>
+            </div>
+
+            <div class="question-card" id="questionCard">
+                <!-- Las preguntas se cargarán dinámicamente -->
+            </div>
+
+            <div class="navigation">
+                <button class="nav-btn" id="prevBtn" onclick="previousQuestion()" disabled>Anterior</button>
+                <button class="nav-btn primary" id="nextBtn" onclick="nextQuestion()" disabled>Siguiente</button>
+            </div>
+        </div>
+
+        <!-- Contenedor de resultados -->
+        <div id="resultsContainer" class="assessment-container">
+            <h2 style="text-align: center; color: #4a5568; margin-bottom: 2rem;">Resultados de tu Evaluación</h2>
+            <div id="resultsContent">
+                <!-- Los resultados se cargarán dinámicamente -->
+            </div>
+            <button class="btn" onclick="restartAssessment()" style="margin-top: 2rem;">Realizar Nueva Evaluación</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentUser = null;
+        let questions = [];
+        let currentQuestionIndex = 0;
+        let answers = {};
+
+        // Preguntas de asertividad (versión local)
+        const LOCAL_QUESTIONS = [
+            {
+                id: 1,
+                text: "Cuando alguien me critica de manera constructiva, mi reacción habitual es:",
+                options: [
+                    "Escucho atentamente y evalúo si la crítica es válida",
+                    "Me pongo a la defensiva inmediatamente",
+                    "Acepto todo sin cuestionar para evitar conflictos",
+                    "Ignoro completamente la crítica"
+                ]
+            },
+            {
+                id: 2,
+                text: "Si tengo una opinión diferente a la del grupo en una reunión:",
+                options: [
+                    "Expreso mi punto de vista de manera respetuosa y fundamentada",
+                    "Acepto sin cuestionar para evitar problemas",
+                    "Me molesto pero no digo nada",
+                    "Busco aliados antes de expresar mi opinión"
+                ]
+            },
+            {
+                id: 3,
+                text: "Cuando necesito pedir un favor a alguien:",
+                options: [
+                    "Lo pido directamente, explicando mis razones",
+                    "Doy muchas vueltas antes de llegar al punto",
+                    "Prefiero no pedir nada para no molestar",
+                    "Exijo el favor como si fuera mi derecho"
+                ]
+            },
+            {
+                id: 4,
+                text: "Si alguien no respeta mis límites personales:",
+                options: [
+                    "Comunico claramente mis límites y las consecuencias",
+                    "Me molesto pero no digo nada claro",
+                    "Cedo para mantener la paz",
+                    "Reacciono con agresividad"
+                ]
+            },
+            {
+                id: 5,
+                text: "Al recibir un cumplido:",
+                options: [
+                    "Lo acepto con gracia y agradezco",
+                    "Lo minimizo o niego",
+                    "Me siento incómodo/a pero no digo nada",
+                    "Lo acepto como algo que merezco obviamente"
+                ]
+            }
+        ];
+
+        // Función para mostrar mensajes
+        function showMessage(message, type = 'error') {
+            const container = document.getElementById('messageContainer');
+            container.innerHTML = `<div class="${type}">${message}</div>`;
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Iniciar evaluación (versión local)
+        function startAssessmentLocal() {
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+
+            if (!name || !email || !age || !gender) {
+                showMessage('Por favor, completa todos los campos.');
+                return;
+            }
+
+            if (age < 16 || age > 100) {
+                showMessage('La edad debe estar entre 16 y 100 años.');
+                return;
+            }
+
+            console.log('🧪 Iniciando evaluación local...');
+            
+            // Simular usuario y preguntas
+            currentUser = {
+                name: name,
+                email: email,
+                age: parseInt(age),
+                gender: gender
+            };
+            
+            questions = LOCAL_QUESTIONS;
+            currentQuestionIndex = 0;
+            answers = {};
+
+            // Cambiar a la vista de evaluación
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('assessmentContainer').classList.add('active');
+            
+            // Mostrar primera pregunta
+            showQuestion();
+            updateProgress();
+            
+            showMessage('¡Evaluación iniciada exitosamente!', 'success');
+            console.log('✅ Evaluación local iniciada con éxito');
+        }
+
+        // Mostrar pregunta actual
+        function showQuestion() {
+            const question = questions[currentQuestionIndex];
+            const questionCard = document.getElementById('questionCard');
+            
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('totalQuestions').textContent = questions.length;
+
+            questionCard.innerHTML = `
+                <div class="question-text">${question.text}</div>
+                <div class="options">
+                    ${question.options.map((option, index) => `
+                        <div class="option" onclick="selectOption(${index})">
+                            <input type="radio" name="question${question.id}" value="${index}" id="option${index}">
+                            <label for="option${index}">${option}</label>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            // Mostrar respuesta previa si existe
+            const previousAnswer = answers[question.id];
+            if (previousAnswer !== undefined) {
+                selectOption(previousAnswer.selected_option);
+            }
+
+            updateNavigationButtons();
+        }
+
+        // Seleccionar opción
+        function selectOption(optionIndex) {
+            const question = questions[currentQuestionIndex];
+            
+            // Guardar respuesta
+            answers[question.id] = {
+                question_id: question.id,
+                selected_option: optionIndex,
+                option_text: question.options[optionIndex]
+            };
+
+            // Actualizar UI
+            const options = document.querySelectorAll('.option');
+            options.forEach((option, index) => {
+                option.classList.toggle('selected', index === optionIndex);
+                const radio = option.querySelector('input[type="radio"]');
+                radio.checked = index === optionIndex;
+            });
+
+            updateNavigationButtons();
+        }
+
+        // Actualizar botones de navegación
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentQuestionIndex === 0;
+            
+            const currentQuestion = questions[currentQuestionIndex];
+            const hasAnswer = answers[currentQuestion.id] !== undefined;
+            
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = 'Finalizar Evaluación';
+                nextBtn.disabled = !hasAnswer;
+            } else {
+                nextBtn.textContent = 'Siguiente';
+                nextBtn.disabled = !hasAnswer;
+            }
+        }
+
+        // Pregunta anterior
+        function previousQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion();
+                updateProgress();
+            }
+        }
+
+        // Siguiente pregunta o finalizar
+        function nextQuestion() {
+            const currentQuestion = questions[currentQuestionIndex];
+            const hasAnswer = answers[currentQuestion.id] !== undefined;
+            
+            if (!hasAnswer) {
+                showMessage('Por favor, selecciona una respuesta antes de continuar.');
+                return;
+            }
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion();
+                updateProgress();
+            } else {
+                completeAssessmentLocal();
+            }
+        }
+
+        // Actualizar barra de progreso
+        function updateProgress() {
+            const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        // Completar evaluación (versión local)
+        function completeAssessmentLocal() {
+            console.log('🧪 Completando evaluación local...');
+            
+            // Calcular puntuación (simulación)
+            const responses = Object.values(answers);
+            let totalScore = 0;
+            
+            responses.forEach(response => {
+                // Puntuación basada en la primera opción (más asertiva)
+                if (response.selected_option === 0) {
+                    totalScore += 4;
+                } else if (response.selected_option === 1) {
+                    totalScore += 2;
+                } else if (response.selected_option === 2) {
+                    totalScore += 1;
+                } else {
+                    totalScore += 3;
+                }
+            });
+
+            const maxScore = questions.length * 4;
+            const percentage = Math.round((totalScore / maxScore) * 100);
+
+            // Determinar nivel de asertividad
+            let level, interpretation;
+            if (percentage >= 80) {
+                level = "Muy Asertivo";
+                interpretation = "Excelente nivel de asertividad. Sabes expresar tus opiniones y defender tus derechos de manera respetuosa y efectiva.";
+            } else if (percentage >= 60) {
+                level = "Asertivo";
+                interpretation = "Buen nivel de asertividad. En la mayoría de situaciones logras comunicarte de manera efectiva.";
+            } else if (percentage >= 40) {
+                level = "Moderadamente Asertivo";
+                interpretation = "Nivel moderado de asertividad. Hay áreas donde puedes mejorar tu capacidad de comunicación.";
+            } else {
+                level = "Poco Asertivo";
+                interpretation = "Nivel bajo de asertividad. Considera trabajar en el desarrollo de estas habilidades.";
+            }
+
+            // Mostrar resultados
+            showResults({
+                user: currentUser,
+                total_score: totalScore,
+                max_score: maxScore,
+                percentage: percentage,
+                level: level,
+                interpretation: interpretation,
+                responses: responses
+            });
+        }
+
+        // Mostrar resultados
+        function showResults(results) {
+            document.getElementById('assessmentContainer').classList.remove('active');
+            document.getElementById('resultsContainer').classList.add('active');
+
+            const resultsContent = document.getElementById('resultsContent');
+            resultsContent.innerHTML = `
+                <div class="results-container">
+                    <div class="score-display">${results.percentage}%</div>
+                    <h3 style="color: #4a5568; margin-bottom: 1rem;">Nivel: ${results.level}</h3>
+                    
+                    <div class="interpretation">
+                        <h3>Interpretación de Resultados</h3>
+                        <p>${results.interpretation}</p>
+                        <p><strong>Puntuación:</strong> ${results.total_score} de ${results.max_score} puntos</p>
+                    </div>
+
+                    <div style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; margin-top: 1.5rem;">
+                        <h4 style="color: #4a5568; margin-bottom: 1rem;">Resumen de Respuestas</h4>
+                        ${results.responses.map((response, index) => `
+                            <p style="margin-bottom: 0.5rem; color: #718096;">
+                                <strong>Pregunta ${index + 1}:</strong> ${response.option_text}
+                            </p>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+
+            showMessage('¡Evaluación completada exitosamente!', 'success');
+            console.log('✅ Evaluación local completada');
+        }
+
+        // Reiniciar evaluación
+        function restartAssessment() {
+            currentUser = null;
+            questions = [];
+            currentQuestionIndex = 0;
+            answers = {};
+
+            document.getElementById('resultsContainer').classList.remove('active');
+            document.getElementById('loginForm').classList.add('active');
+
+            // Limpiar formulario
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('gender').value = '';
+
+            showMessage('Formulario reiniciado. Puedes comenzar una nueva evaluación.', 'success');
+        }
+    </script>
+</body>
+</html>
